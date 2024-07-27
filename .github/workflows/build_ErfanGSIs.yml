@@ -57,8 +57,8 @@ jobs:
               mkdir final
               zip -r final/GSI.zip ./*
        
-    - name: Upload GSI to BitSend
-      run: |
+       - name: Upload GSI to BitSend
+         run: |
               curl -sL https://git.io/file-transfer | sh
               ./transfer gof ./final/GSI.zip
 
