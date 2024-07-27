@@ -22,51 +22,46 @@ env:
 jobs:
   build:
     runs-on: self-hosted
+    if: github.event.repository.owner.id == github.event.sender.id
     steps:
     - name: Set up Python
       run: |
         python -m pip install --upgrade pip
         pip install python3
-
-jobs:
-  build:
-    runs-on: self-hosted
-    if: github.event.repository.owner.id == github.event.sender.id
-
-    steps:
-       - name: Checkout
+        
+    - name: Checkout
          uses: actions/checkout@master
            
-       - name: Initialization environment
+    - name: Initialization environment
          run: |
             sudo -E apt-get -qq install git wget
        
-       - name: Clone ErfanGSI Source Code
+    - name: Clone ErfanGSI Source Code
          run: git clone --recurse-submodules https://github.com/erfanoabdi/ErfanGSIs.git ErfanGSIs
          
-       - name: Fix exit
+    - name: Fix exit
          run: |
               sed -i 's/\|\| exit 1//g' $GITHUB_WORKSPACE/ErfanGSIs/url2GSI.sh
               sed -i 's/exit 1//g' $GITHUB_WORKSPACE/ErfanGSIs/url2GSI.sh
        
-       - name: Setting up ErfanGSI requirements
+    - name: Setting up ErfanGSI requirements
          run: |
               cd $GITHUB_WORKSPACE/ErfanGSIs
               mkdir ./output
               sudo bash ./setup.sh
        
-       - name: Download Stock Rom & Generate GSI
+    - name: Download Stock Rom & Generate GSI
          run: |
               cd  $GITHUB_WORKSPACE/ErfanGSIs
               sudo bash ./url2GSI.sh -c --$BUILD_TYPE $ROM_URL $ROM_NAME
        
-       - name: Zip GSI  
+    - name: Zip GSI  
          run: |
               cd $GITHUB_WORKSPACE/ErfanGSIs/output
               mkdir final
               zip -r final/GSI.zip ./*
        
-       - name: Upload GSI to BitSend
+    - name: Upload GSI to BitSend
          run: |
               curl -sL https://git.io/file-transfer | sh
               ./transfer gof ./final/GSI.zip
